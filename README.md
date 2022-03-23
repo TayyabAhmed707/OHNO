@@ -1,4 +1,4 @@
 # OHNO
-# Semester Projext for DC
+# Semester Project for DC
 Tayyab Ahmed | Talha Waheed | Abdullah Zia
 

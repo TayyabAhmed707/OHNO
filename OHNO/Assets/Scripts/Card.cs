@@ -14,7 +14,7 @@ public class Card : MonoBehaviour
 
     public void setPosition(Vector3 pos)
     {
-        this.position = pos;
+        position = pos;
     }
     private void updateTexture()
     {

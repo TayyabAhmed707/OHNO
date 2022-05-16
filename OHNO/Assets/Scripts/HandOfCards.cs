@@ -42,10 +42,10 @@ public class HandOfCards : MonoBehaviour
     {
         float gap = numberOfCards * maxgapBetweenCards > handWidth ? handWidth / numberOfCards : maxgapBetweenCards;
 
-        float startPoint = (gap / 2 * (numberOfCards - 1));
+        float startPoint = gap * numberOfCards/2.0f;
         for (int i = 0; i < numberOfCards; i++)
         {
-            cardComponents[i].setPosition(deckAnchor.transform.position + new Vector3(startPoint - i * gap ,0  ,i*0.02f));
+            cardComponents[i].setPosition(deckAnchor.transform.position + new Vector3(startPoint - i * gap - gap/2 ,0  ,i*0.02f));
             
         }
         

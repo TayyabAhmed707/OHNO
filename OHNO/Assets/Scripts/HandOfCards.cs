@@ -55,24 +55,11 @@ public class HandOfCards : MonoBehaviour
         
     }
 
-    private void UpdateCardPosition()
-    {
-        foreach(string cardLabel in cardComponents.Keys)
-        {
-            cards[cardLabel].transform.position = Vector3.MoveTowards(cards[cardLabel].transform.position,
-                cardComponents[cardLabel].position, Time.deltaTime * handBalanceSpeed);
-
-            cards[cardLabel].transform.rotation = Quaternion.Lerp(cards[cardLabel].transform.rotation, Quaternion.identity, Time.deltaTime * rotationSpeed);
-
-        }
-        
-        
-    }
+    
     private void Update()
     {
         
         counter++;
-        UpdateCardPosition();
         if (counter > 200)
         {
             counter = 0;

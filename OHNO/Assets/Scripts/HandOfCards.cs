@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -6,8 +7,10 @@ using UnityEngine.Serialization;
 public class HandOfCards : MonoBehaviour
 {
 
-    [SerializeField] private GameObject[] cards = new GameObject[150];  //array of the card gameObjects
-    private Card[] cardComponents = new Card[150];  //array of the card script attached to the cards, (to avoid using getComponent again and again) 
+    //[SerializeField] private GameObject[] cards = new GameObject[150];  //array of the card gameObjects
+    public Dictionary<string, GameObject> cards = new Dictionary<string, GameObject>();
+    //private Card[] cardComponents = new Card[150];  //array of the card script attached to the cards, (to avoid using getComponent again and again) 
+    public Dictionary<string, Card> cardComponents  = new Dictionary<string, Card>();
     [SerializeField] private int numberOfCards = 0;
     [SerializeField] GameObject cardGameObject;     // the card prefab, assigned in the editor
 
@@ -27,10 +30,10 @@ public class HandOfCards : MonoBehaviour
         // create a new gameobject at the position of the hand
         GameObject newCard = Instantiate(cardGameObject, deck.transform.position, deck.transform.rotation);
         newCard.transform.Rotate(-90,0,0);
-        cards[numberOfCards] = newCard;
-        cardComponents[numberOfCards] = newCard.GetComponent<Card>();
+        cards[newCardLabel] = newCard;
+        cardComponents[newCardLabel] = newCard.GetComponent<Card>();
         
-        cardComponents[numberOfCards].setLabel(newCardLabel);
+        cardComponents[newCardLabel].setLabel(newCardLabel);
         newCard.transform.parent = transform;
         numberOfCards++;
         
@@ -43,22 +46,23 @@ public class HandOfCards : MonoBehaviour
         float gap = numberOfCards * maxgapBetweenCards > handWidth ? handWidth / numberOfCards : maxgapBetweenCards;
 
         float startPoint = gap * numberOfCards/2.0f;
-        for (int i = 0; i < numberOfCards; i++)
+        int i = 0;
+        foreach(KeyValuePair<string,Card> c in cardComponents)
         {
-            cardComponents[i].setPosition(deckAnchor.transform.position + new Vector3(startPoint - i * gap - gap/2 ,0  ,i*0.02f));
-            
+            c.Value.setPosition(deckAnchor.transform.position + new Vector3(startPoint - i * gap - gap/2 ,0  ,i*0.02f));
+            i++;
         }
         
     }
 
     private void UpdateCardPosition()
     {
-        for (int i = 0; i < numberOfCards; i++)
+        foreach(string cardLabel in cardComponents.Keys)
         {
-            cards[i].transform.position = Vector3.MoveTowards(cards[i].transform.position,
-                cardComponents[i].position, Time.deltaTime * handBalanceSpeed);
+            cards[cardLabel].transform.position = Vector3.MoveTowards(cards[cardLabel].transform.position,
+                cardComponents[cardLabel].position, Time.deltaTime * handBalanceSpeed);
 
-            cards[i].transform.rotation = Quaternion.Lerp(cards[i].transform.rotation, Quaternion.identity, Time.deltaTime * rotationSpeed);
+            cards[cardLabel].transform.rotation = Quaternion.Lerp(cards[cardLabel].transform.rotation, Quaternion.identity, Time.deltaTime * rotationSpeed);
 
         }
         
@@ -71,7 +75,6 @@ public class HandOfCards : MonoBehaviour
         UpdateCardPosition();
         if (counter > 200)
         {
-            
             counter = 0;
             DrawCard();
         }

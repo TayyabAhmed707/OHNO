@@ -12,6 +12,11 @@ public class Card : MonoBehaviour
         updateTexture();
     }
 
+    public string getLabel()
+    {
+        return label;
+    }
+
     public void setPosition(Vector3 pos)
     {
         position = pos;

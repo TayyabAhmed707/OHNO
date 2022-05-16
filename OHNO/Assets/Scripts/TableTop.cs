@@ -1,18 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class TableTop : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private static Queue<GameObject> cardQueue = new Queue<GameObject>();
+    public string topCard = "";
+    
+    public void ThrowOnTop(GameObject card)
     {
-        
-    }
+        cardQueue.Enqueue(card);
+        topCard = card.GetComponent<Card>().getLabel();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (cardQueue.Count > 69)
+        {
+            Destroy(cardQueue.Dequeue());
+        }
     }
 }

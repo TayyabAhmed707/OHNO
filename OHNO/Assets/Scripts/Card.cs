@@ -9,6 +9,14 @@ public class Card : MonoBehaviour
     public Quaternion rotation = Quaternion.identity;
     public float movementSpeed = 1f;
     public float rotationSpeed = 1f;
+    public HandOfCards Hand = null;
+    [SerializeField] private float floatingDistanceOnHover = 0.3f;
+
+    public bool movingUsingCode = true;
+    public bool freeFall = false;
+
+
+    private int counter = 0;
     public void setLabel(string label)  // also updates the texture
     {
         this.label = label;
@@ -33,14 +41,54 @@ public class Card : MonoBehaviour
     private void UpdateCardPositionAndRotation()
     {
         transform.position = Vector3.MoveTowards(transform.position, position, Time.deltaTime * movementSpeed);
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, Time.deltaTime * rotationSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * rotationSpeed);
     }
 
     private void Update()
     {
-        if (transform.position != position || transform.rotation != rotation)
+        if (!movingUsingCode && Vector3.Distance(transform.position,position) < 0.1f)
+        {
+            
+            freeFall = true;
+            GetComponent<Rigidbody>().isKinematic = false;
+        }
+        
+        if (!freeFall && (transform.position != position || transform.rotation != rotation))
         {
             UpdateCardPositionAndRotation();
+        }
+        
+        
+   
+    }
+
+    void playCard()
+    {
+        if (GameManager.isValidMove(label))
+        {
+            Hand.ThrowCard(gameObject);
+        }
+    }
+    
+    
+    void OnMouseEnter()
+    {
+        if(Hand != null)
+            position += new Vector3(0,floatingDistanceOnHover,0);
+    }
+    
+    void OnMouseExit()
+    {
+        if(Hand != null)
+            position-= new Vector3(0,floatingDistanceOnHover,0);
+    }
+    
+    void OnMouseOver()
+    {
+        
+        if (Hand != null && Input.GetMouseButtonDown(0))
+        {
+            playCard();
         }
     }
 }

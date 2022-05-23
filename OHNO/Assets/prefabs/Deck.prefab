@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2704252610150686484}
+  - component: {fileID: 5909590307537463675}
+  - component: {fileID: 4207058820988652221}
   m_Layer: 0
   m_Name: Deck
   m_TagString: Untagged
@@ -32,6 +34,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5909590307537463675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5540054723889460449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d940bb7088bbea47aba995cdd71a178, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &4207058820988652221
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5540054723889460449}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.34, z: 1.61}
+  m_Center: {x: 0, y: -0.16, z: 0}
 --- !u!1001 &8907122371258173567
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -91,7 +118,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 270
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5549297955779848391, guid: 7e09d6f7db325be4c85b64e130c2bf33, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7e09d6f7db325be4c85b64e130c2bf33, type: 3}
 --- !u!4 &4452307590799280084 stripped
 Transform:

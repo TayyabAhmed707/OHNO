@@ -5,6 +5,9 @@
     "m_Properties": [
         {
             "m_Id": "cdfa9ed97e8f4e6bafb1a1406ee86887"
+        },
+        {
+            "m_Id": "1c1d0b43833c4d8b9b7419b9d019f209"
         }
     ],
     "m_Keywords": [],
@@ -164,6 +167,24 @@
             "m_Id": "1f3c46dacb6c4bcd84d761a8e197d104"
         }
     ]
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.BooleanShaderProperty",
+    "m_ObjectId": "1c1d0b43833c4d8b9b7419b9d019f209",
+    "m_Guid": {
+        "m_GuidSerialized": "baaa8429-3e7d-40a4-a107-168558003818"
+    },
+    "m_Name": "IsMyturn",
+    "m_DefaultReferenceName": "Boolean_1c1d0b43833c4d8b9b7419b9d019f209",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": false
 }
 
 {
@@ -875,10 +896,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -636.0,
-            "y": 98.99998474121094,
-            "width": 207.99998474121095,
-            "height": 436.9999694824219
+            "x": -803.0,
+            "y": 160.99998474121095,
+            "width": 208.0,
+            "height": 437.0
         }
     },
     "m_Slots": [

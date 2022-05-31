@@ -1,7 +1,6 @@
 
-using System;
+
 using System.Collections.Generic;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,7 +12,7 @@ public class HandOfCards : MonoBehaviour
 
     //private Card[] cardComponents = new Card[150];  //array of the card script attached to the cards, (to avoid using getComponent again and again) 
     public List<Card> cardComponents = new List<Card>();
-    [SerializeField] private int numberOfCards = 0;
+    [SerializeField] public int numberOfCards = 0;
     [SerializeField] GameObject cardGameObject; // the card prefab, assigned in the editor
 
     public GameObject deck;
@@ -21,11 +20,10 @@ public class HandOfCards : MonoBehaviour
     public float handWidth = 5f;
     public float maxgapBetweenCards = 0.2f;
     [FormerlySerializedAs("deckAnchor")] public Transform HandAnchor;
-    public bool myTurn = false;
 
-    
+
     //  **************  DRAW CARD METHOD  **************
-    void DrawCard(float pWild = 0.2f)
+    public void DrawCard(float pWild = 0.0f)
     {
         // generate a random card
         string newCardLabel = RandomCardGenerator.getRandomCard(pWild);
@@ -45,6 +43,14 @@ public class HandOfCards : MonoBehaviour
         CalculatePositions();
 
     }
+
+    public void DrawCards(int howMany, float pWild = 0.2f)
+    {
+        for (int i = 0; i < howMany; i++)
+        {
+            DrawCard();
+        }
+    }
     
     // **************  CALCULATES POSITIONS WHEN DRAWING **************
     private void CalculatePositions()
@@ -55,22 +61,30 @@ public class HandOfCards : MonoBehaviour
         for (int i = 0; i < numberOfCards; i++)
         {
             cardComponents[i].setPosition(HandAnchor.transform.position +
-                                          new Vector3(startPoint - i * gap - gap / 2, i * -0.02f, i * 0.02f));
+                                          new Vector3(startPoint - i * gap - gap / 2, -i*0.007f, i * 0.02f));
             cardComponents[i].rotation = HandAnchor.transform.rotation;
         }
     }
 
-    public void TakeTurn(string topCard)
+    public void TakeTurn(string topCard, char color)
     {
-        for (int i = 0; i < 7; i++)
+        tableTop.topCard = topCard;
+        if (color == '.')
         {
-            DrawCard();
+            tableTop.color = topCard[0];
+        }
+        else
+        {
+            tableTop.color = color;
         }
     }
 
     void ClickedOnDeck()
     {
-        DrawCard();
+        if (GameManager.MyTurn)
+        {
+            DrawCard();
+        }
         
     }
 
@@ -80,7 +94,6 @@ public class HandOfCards : MonoBehaviour
         {
             if (cards[i] == cardToThrow)
             {
-                
                 cardComponents.Remove(cardComponents[i]);
                 GameObject card = cards[i];
                 cards.Remove(cards[i]);

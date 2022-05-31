@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 183094573369987711}
   - component: {fileID: 2311392278070157200}
   - component: {fileID: 7112188141218613505}
+  - component: {fileID: 6057714561070056157}
   m_Layer: 0
   m_Name: EnemyCard
   m_TagString: card
@@ -194,3 +195,23 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7570550029946788778}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &6057714561070056157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7570550029946788778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e55587b16a10dec45962077582c45fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0, w: 1}
+  movementSpeed: 12
+  rotationSpeed: 5
+  Hand: {fileID: 0}
+  floatingDistanceOnHover: 0.3
+  movingUsingCode: 1
+  freeFall: 0

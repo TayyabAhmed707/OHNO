@@ -11,11 +11,11 @@ public class Card : MonoBehaviour
     public float rotationSpeed = 1f;
     public HandOfCards Hand = null;
     [SerializeField] private float floatingDistanceOnHover = 0.3f;
-
+    private bool isDisplaced = false;
     public bool movingUsingCode = true;
     public bool freeFall = false;
 
-
+    
     private int counter = 0;
     public void setLabel(string label)  // also updates the texture
     {
@@ -46,9 +46,9 @@ public class Card : MonoBehaviour
 
     private void Update()
     {
+        
         if (!movingUsingCode && Vector3.Distance(transform.position,position) < 0.1f)
         {
-            
             freeFall = true;
             GetComponent<Rigidbody>().isKinematic = false;
         }
@@ -64,32 +64,42 @@ public class Card : MonoBehaviour
 
     void playCard()
     {
-        //if (GameState.isValidMove(label))
-        //{
-           // Hand.ThrowCard(gameObject);
-        //}
+        if (GameManager.MyTurn && GameManager.IsValidMove(label, Hand.tableTop.topCard, Hand.tableTop.color))
+        {
+           Hand.ThrowCard(gameObject);
+           EventHandler.TriggerPlayedCard(label);
+        }
     }
     
     
     void OnMouseEnter()
     {
-        if(Hand != null)
-            position += new Vector3(0,floatingDistanceOnHover,0);
+        if (Hand != null && GameManager.MyTurn)
+        {
+            position += new Vector3(0, floatingDistanceOnHover, 0);
+            isDisplaced = true;
+        }
     }
     
     void OnMouseExit()
     {
-        if(Hand != null)
+        if (Hand != null && GameManager.MyTurn || isDisplaced)
+
+        {
+            isDisplaced = false;
             position-= new Vector3(0,floatingDistanceOnHover,0);
+        }
     }
     
     void OnMouseOver()
     {
         
-        //if (GameState.isMyTurn() && Hand != null && Input.GetMouseButtonDown(0))
-        //{
+        if (Hand != null && GameManager.MyTurn && Input.GetMouseButtonDown(0))
+        {
             playCard();
-        //}
+        }
     }
+
+    
 }
 

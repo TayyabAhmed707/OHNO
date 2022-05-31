@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class NetworkManagerOhno : NetworkManager
-{   
+{
     private int playerInLobby;
     public int playerCount = 0;
     [SerializeField] private int minPalyers = 2;
@@ -17,19 +17,19 @@ public class NetworkManagerOhno : NetworkManager
     [Header("Game")] [SerializeField] private NetworkGamePlayer gamePlayerPrefab;
     public static event Action OnClientConnected;
     public static event Action OnClientDisconnected;
-    public static event Action<string> FirstCardDrawn;
-    public static event Action<NetworkConnection> OnServerReadied;
+    public static event Action OnServerReadied;
     public List<NetworkRoomPlayer> RoomPlayers { get; } = new List<NetworkRoomPlayer>();
 
-    public Dictionary<int,NetworkGamePlayer> GamePlayers { get; } = new Dictionary<int,NetworkGamePlayer>();
+    public Dictionary<int, NetworkGamePlayer> GamePlayers { get; } = new Dictionary<int, NetworkGamePlayer>();
+    public Dictionary<int, string> GamePlayerNames { get; } = new Dictionary<int, string>();
     public override void OnStartServer() => spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
-    
-    
+
+
     public int GetPlayerCount()
     {
         return GamePlayers.Count;
     }
-    
+
     public override void OnStartClient()
     {
         var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
@@ -77,7 +77,7 @@ public class NetworkManagerOhno : NetworkManager
             bool isLeader = RoomPlayers.Count == 0;
             NetworkRoomPlayer roomPlayerInstance = Instantiate(roomPlayerPrefab);
             roomPlayerInstance.IsLeader = isLeader;
-            roomPlayerInstance.IsLeader = isLeader;
+            
             NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
 
 
@@ -151,16 +151,17 @@ public class NetworkManagerOhno : NetworkManager
         //Menu to game
         if (SceneManager.GetActiveScene().name == menuScene && newSceneName.StartsWith("Scene_Game"))
         {
-            
+
             for (int i = RoomPlayers.Count - 1; i >= 0; i--)
             {
                 var conn = RoomPlayers[i].connectionToClient;
                 var gameplayerInstance = Instantiate(gamePlayerPrefab);
-                gameplayerInstance.SetDisplayName(RoomPlayers[i].DisplayName);
-
+                GamePlayerNames[i] = RoomPlayers[i].DisplayName;
+                gameplayerInstance.isLeader = RoomPlayers[i].IsLeader;
+                
                 NetworkServer.Destroy(conn.identity.gameObject);
 
-                NetworkServer.RemovePlayerForConnection(conn, gameplayerInstance.gameObject);
+                NetworkServer.ReplacePlayerForConnection(conn, gameplayerInstance.gameObject);
 
             }
         }
@@ -172,23 +173,16 @@ public class NetworkManagerOhno : NetworkManager
     public override void OnServerReady(NetworkConnectionToClient conn)
     {
         base.OnServerReady(conn);
-        OnServerReadied?.Invoke(conn);
-        
-       
-            
-        
-    }
-
-    public override void OnClientSceneChanged()
-    {
-        base.OnClientSceneChanged();
-        string firstCard = RandomCardGenerator.getRandomCard(0.0f);
-        Debug.Log("Invoking First CArd");
-        FirstCardDrawn?.Invoke(firstCard);
-        
-        
-        
-        
+        if (playerInLobby > 1)
+        {
+            playerInLobby--;
+        }
+        else
+        {
+            OnServerReadied?.Invoke();
+        }
     }
 }
+
+   
 

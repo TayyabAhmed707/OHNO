@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Net;
 using Mirror;
 using TMPro;
 using UnityEngine;
@@ -12,7 +14,8 @@ public class NetworkRoomPlayer : NetworkBehaviour
    [SerializeField] private TMP_Text[] playerNameTexts = new TMP_Text[4];
    [SerializeField] private TMP_Text[] playerReadyTexts = new TMP_Text[4];
    [SerializeField] private Button startGameButton;
-
+   [SerializeField] private TMP_Text hostIp;
+   
    [SyncVar(hook = nameof(HandleDisplayNameChanged))]
    public string DisplayName = "loading...";
 
@@ -29,11 +32,13 @@ public class NetworkRoomPlayer : NetworkBehaviour
 
    public bool IsLeader
    {
+      get { return isLeader;}
       set
       {
          isLeader = value;
          startGameButton.gameObject.SetActive(value);
       }
+      
    }
 
    private NetworkManagerOhno room;
@@ -54,6 +59,7 @@ public class NetworkRoomPlayer : NetworkBehaviour
    {
       CmdSetDisplayName(PlayerNameEnter.DisplayName);
       lobbyUI.SetActive(true);
+      hostIp.text = "Host IP address: " + GetLocalIPv4();
    }
 
    public override void OnStartClient()
@@ -101,6 +107,14 @@ public class NetworkRoomPlayer : NetworkBehaviour
             "<color=red> Not Ready</color>";
       }
    }
+   
+   public string GetLocalIPv4()
+   {
+      return Dns.GetHostEntry(Dns.GetHostName())
+         .AddressList.First(
+            f => f.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+         .ToString();
+   }    
 
    public void HandleReadyToStart(bool readyToStart)
    {
@@ -132,4 +146,5 @@ public class NetworkRoomPlayer : NetworkBehaviour
       
       Room.StartGame();
    }
+   
 }

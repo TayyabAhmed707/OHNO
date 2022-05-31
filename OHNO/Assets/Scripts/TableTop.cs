@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ public class TableTop : MonoBehaviour
     public GameObject cardGameObject;
     public GameManager gm;
     public string topCard = "";
-    
+    public char color;
     public void ThrowOnTop(GameObject card)
     {   
         cardQueue.Enqueue(card);
@@ -24,8 +25,8 @@ public class TableTop : MonoBehaviour
 
         Card cardComponent = card.GetComponent<Card>();
         
-        cardComponent.position = TableTopAnchor.position + new Vector3(0,0.5f,0);
-        cardComponent.movingUsingCode =false;
+        cardComponent.position = TableTopAnchor.position + new Vector3(0,cardQueue.Count*0.1f,0);
+        cardComponent.movingUsingCode = false;
         cardComponent.rotation = TableTopAnchor.rotation;
         cardComponent.rotation *=  Quaternion.Euler(Vector3.forward*UnityEngine.Random.Range(-15f, 15f));
         if (cardQueue.Count > 10)
@@ -36,7 +37,6 @@ public class TableTop : MonoBehaviour
 
     public void drawFirstCard(string card)
     {
-        
         // create a new gameobject at the position of the hand
         GameObject newCard = Instantiate(cardGameObject, deck.transform.position, deck.transform.rotation);
         
@@ -45,4 +45,9 @@ public class TableTop : MonoBehaviour
         
     }
 
+    public GameObject getTopCardObject()
+    {
+        return cardQueue.Peek();
+    }
+    
 }

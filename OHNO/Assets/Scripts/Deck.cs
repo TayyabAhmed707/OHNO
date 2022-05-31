@@ -1,15 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    [SerializeField] private HandOfCards ownHand;
+    public bool isClickable = false;
     void OnMouseOver()
-    {
+    {   
         
-        if (Input.GetMouseButtonDown(0))
+        
+        if (isClickable && Input.GetMouseButtonDown(0))
         {
-            EventHandler.TriggerClickOnDeck();
+            if (GameManager.MyTurn)
+            { 
+                EventHandler.TriggerClickOnDeck();
+            }
+            
         }
                 
     }

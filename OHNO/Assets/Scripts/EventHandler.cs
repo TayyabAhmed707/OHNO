@@ -1,22 +1,24 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
+
 
 public class EventHandler : MonoBehaviour
 {
     public delegate void DeckAction();
     public delegate void CardAction(GameObject card);
     public static event DeckAction ClickedOnDeck;
-    public static event CardAction ClickedOnCard;
-    
-    
+    public static event Action<string> PlayedCard;
+
     // Start is called before the first frame update
 
     public static void TriggerClickOnDeck()
-    {
+    {   
         ClickedOnDeck?.Invoke();
     }
     
+    public static void TriggerPlayedCard(string card)
+    {
+        PlayedCard?.Invoke(card);
+    }
+
 }

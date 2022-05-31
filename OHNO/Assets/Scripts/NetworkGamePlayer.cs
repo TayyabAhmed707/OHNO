@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -7,12 +8,13 @@ public class NetworkGamePlayer : NetworkBehaviour
 {
 
    private HandOfCards ownHand = null;
-   private int myId;
+   private GameManager gameManager = null;
+   
+   public int myId;
+   public bool isLeader;
+   private int turnOrder = 1;
+   private Dictionary<int, string> playerNames = new Dictionary<int, string>();
 
-   [SyncVar]
-   private string displayName = "loading...";
-
-   [SyncVar] private bool GameOver = false;
    private NetworkManagerOhno room;
 
    private NetworkManagerOhno Room
@@ -29,8 +31,7 @@ public class NetworkGamePlayer : NetworkBehaviour
 
    public override void OnStartServer()
    {
-      Debug.Log("Subscribing to  First CArd");
-      NetworkManagerOhno.FirstCardDrawn += FirstCard;
+      NetworkManagerOhno.OnServerReadied += LeaderValidate;
    }
 
    private void OnEnable()
@@ -39,53 +40,69 @@ public class NetworkGamePlayer : NetworkBehaviour
       DontDestroyOnLoad(gameObject);
    }
 
-   public override void OnStartClient()
-   {
-      
-      myId = Room.playerCount;
-      Room.GamePlayers[Room.playerCount] = this;
-      Room.playerCount++;
-   }
+   
+
+   
    
    public override void OnStopClient()
    {
       Room.GamePlayers.Remove(myId);
    }
    
-   [Server]
-   public void FirstCard(string card)
+   public void LeaderValidate()
    {
       
-      Debug.Log("Sucess in invoking");
-      DrawFirstCard(card);
-      int firstTurn = Random.Range(0, Room.playerCount-1);
-      TakeTurn(Room.GamePlayers[firstTurn].connectionToClient,card);
-   }
-
-   
-   
-   [Server]
-   public void SetDisplayName(string displayName)
-   {
-      this.displayName = displayName;
-   }
-
-   [TargetRpc]
-   void TakeTurn(NetworkConnection conn, string topCard)
-   {
-      if (ownHand == null)
+      if (isLeader)
       {
-         ownHand = GameObject.Find("HandOfCards").GetComponent<HandOfCards>();
-         
+         ServerStartTheGame();
       }
-      ownHand.TakeTurn(topCard);
+   }
+
+   [Command]
+   public void ServerStartTheGame()
+   {
+      string[] players = new String[4];
+      string firstCard = RandomCardGenerator.getRandomCard(0.0f);
+      for (int i = 0; i < Room.GamePlayers.Count; i++)
+      {
+         setId(Room.GamePlayers[i].connectionToClient, i);
+         
+         players[i] = Room.GamePlayerNames[i];
+
+      }
+      
+      InitialSetup(firstCard,players,Room.GamePlayers.Count);
+      
+      int firstTurn = Random.Range(0, Room.playerCount-1);
+      
+      TakeTurn(Room.GamePlayers[firstTurn].connectionToClient, firstCard,firstCard[0]);
+   }
+
+   
+  
+   [TargetRpc]
+   void setId(NetworkConnection conn,  int id)
+   {
+      myId = id;
+   }
+   
+   [TargetRpc]
+   void TakeTurn(NetworkConnection conn, string topCard, char color)
+   {
+      Debug.Log("I got the targetRPC");
+      gameManager.TakeTurn(topCard,color);
    }
 
    [ClientRpc]
-   void DrawFirstCard(string card)
-   {  
-      Debug.Log("FIRST CARRRRRRRRDS");
-      GameObject.Find("TableTop").GetComponent<TableTop>().drawFirstCard(card);
+   void InitialSetup(string card, string[] players, int numPlayers)
+   {
+      if (gameManager == null)
+      {
+         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+      }
+      
+      gameManager.SetupPlayerNames(players, myId, numPlayers ,this);
+      gameManager.InitialSetup(card);
    }
    
    [ClientRpc]
@@ -99,7 +116,91 @@ public class NetworkGamePlayer : NetworkBehaviour
    {
       
    }
+   
+   
+   // DRAWING CARDS
+   
+   [Command(requiresAuthority = false)]
+   public void iDrewCard(int player)
+   {
+      playerDrewCard(player);
+   }
+   
+   [ClientRpc]
+   private void playerDrewCard(int player)
+   {
+      gameManager.playerDrewCard(player);
+   }
+   public override void OnStartClient()
+   {
+      
+      myId = Room.playerCount;
+      Room.GamePlayers[Room.playerCount] = this;
+      Room.playerCount++;
+   }
+   
+   // Playing CARDS
+   
+   [Command(requiresAuthority = false)]
+   public void iPlayedCard(int player, string card, char color, int turn)
+   {
+      int nextTurn = ((player + turn * turnOrder) % Room.GamePlayers.Count);
+    
+      if (turn == -1)
+      {
+         turnOrder *= -1;
+      }
 
+      if (card == "w0")
+      {
+         drawNCards(Room.GamePlayers[nextTurn].connectionToClient,4);
+         playerDrewNCards(nextTurn,4);
+      }
+      else if (card.Substring(1) == "11")
+      {
+         drawNCards(Room.GamePlayers[nextTurn].connectionToClient,2);
+         playerDrewNCards(nextTurn,2);
+      }
+      playerPlayedCard(player, card, color);
+      TakeTurn(Room.GamePlayers[nextTurn].connectionToClient, card, card[0]);
+   }
+   
+
+
+   [ClientRpc]
+   private void playerPlayedCard(int player,string card, char color)
+   {
+      gameManager.playerPlayedCard(player, card, color);
+   }
+   
+   // Winning logic
+   
+   [Command(requiresAuthority = false)]
+   public void iWon(string Name)
+   {
+      playerWon(Name);
+      NetworkManager.singleton.ServerChangeScene("Scene_Lobby");
+   }
+
+
+   [ClientRpc]
+   private void playerWon(string player)
+   {
+      gameManager.playerWon(player);
+   }
+   
+   
+   [TargetRpc]
+   private void drawNCards(NetworkConnection conn,int howMany)
+   {
+      gameManager.DrawNCards(howMany);
+   }
+   
+   [ClientRpc]
+   private void playerDrewNCards(int player,int howmany)
+   {
+      gameManager.playerDrewCards(player, howmany);
+   }
 }
 
 
